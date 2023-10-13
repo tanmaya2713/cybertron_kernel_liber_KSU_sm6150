@@ -83,6 +83,10 @@ ifeq ($(CONFIG_ARCH_TRINKET), y)
 LINUXINCLUDE    += \
                 -include $(srctree)/techpack/audio/config/trinketautoconf.h
 endif
+ifeq ($(CONFIG_HANOIP_DTB), y)
+LINUXINCLUDE    += \
+                -include $(srctree)/techpack/audio/config/hanoiautoconf.h
+endif
 
 obj-y += soc/
 obj-y += dsp/
