@@ -9,3 +9,5 @@ ccflags-y += -Idrivers/media/platform/msm/camera/cam_icp/fw_inc
 ccflags-y += -Idrivers/media/platform/msm/camera/cam_cpas/include
 
 obj-$(CONFIG_SPECTRA_CAMERA) += bps_dev.o bps_core.o bps_soc.o
+
+ccflags-y += -I$(src)

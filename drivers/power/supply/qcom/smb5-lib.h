@@ -1038,3 +1038,5 @@ extern int eb_on_sw;
 #define DEFAULT_SOURCE_CURRENT_MA 1500
 
 #endif /* __SMB5_CHARGER_H */
+
+#define smblib_handle_usb_current(...) (0)

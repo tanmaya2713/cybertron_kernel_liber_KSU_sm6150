@@ -9,3 +9,5 @@ ccflags-y += -Idrivers/media/platform/msm/camera/cam_icp/fw_inc
 ccflags-y += -Idrivers/media/platform/msm/camera/cam_cpas/include
 
 obj-$(CONFIG_SPECTRA_CAMERA) += a5_dev.o a5_core.o a5_soc.o
+
+ccflags-y += -I$(src)

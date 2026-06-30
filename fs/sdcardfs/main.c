@@ -497,7 +497,7 @@ static int __init init_sdcardfs_fs(void)
 {
 	int err;
 
-	pr_info("Registering sdcardfs " SDCARDFS_VERSION "\n");
+	pr_info("Registering sdcardfs " "v0.1" "\n");
 
 	err = sdcardfs_init_inode_cache();
 	if (err)
@@ -535,7 +535,7 @@ MODULE_AUTHOR("Woojoong Lee, Daeho Jeong, Kitae Lee, Yeongjin Gil System Memory 
 
 /* Current maintainer */
 MODULE_AUTHOR("Daniel Rosenberg, Google");
-MODULE_DESCRIPTION("Sdcardfs " SDCARDFS_VERSION);
+MODULE_DESCRIPTION("Sdcardfs " "v0.1");
 MODULE_LICENSE("GPL");
 
 module_init(init_sdcardfs_fs);
