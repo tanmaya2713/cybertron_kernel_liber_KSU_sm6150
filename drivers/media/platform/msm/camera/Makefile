@@ -14,3 +14,5 @@ obj-$(CONFIG_SPECTRA_CAMERA) += cam_fd/
 obj-$(CONFIG_SPECTRA_CAMERA) += cam_lrme/
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

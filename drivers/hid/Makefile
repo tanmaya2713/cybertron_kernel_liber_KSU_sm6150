@@ -130,3 +130,5 @@ obj-$(CONFIG_HID_QVR)		+= hid-qvr.o hid-trace.o
 obj-$(CONFIG_HID_MOTOROLA_MODS)	+= hid-moto-mods.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

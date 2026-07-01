@@ -11,3 +11,5 @@ obj-$(CONFIG_SPECTRA_CAMERA) += cam_ois/
 obj-$(CONFIG_SPECTRA_CAMERA) += cam_ir_led/
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

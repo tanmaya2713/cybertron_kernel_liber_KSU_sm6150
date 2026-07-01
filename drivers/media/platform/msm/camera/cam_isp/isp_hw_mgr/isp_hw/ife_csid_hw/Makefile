@@ -13,3 +13,5 @@ obj-$(CONFIG_SPECTRA_CAMERA) += cam_ife_csid_dev.o cam_ife_csid_soc.o cam_ife_cs
 obj-$(CONFIG_SPECTRA_CAMERA) += cam_ife_csid17x.o cam_ife_csid_lite17x.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

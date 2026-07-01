@@ -11,3 +11,5 @@ ccflags-y += -Idrivers/media/platform/msm/camera/cam_jpeg/jpeg_hw/jpeg_dma_hw
 obj-$(CONFIG_SPECTRA_CAMERA) += jpeg_dma_dev.o jpeg_dma_core.o jpeg_dma_soc.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

@@ -12,3 +12,5 @@ obj-$(CONFIG_SPECTRA_CAMERA) += cam_req_mgr_core.o\
 				cam_req_mgr_debug.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

@@ -1040,3 +1040,5 @@ extern int eb_on_sw;
 #endif /* __SMB5_CHARGER_H */
 
 #define smblib_handle_usb_current(...) (0)
+
+#define smblib_handle_usb_current(...) (0)

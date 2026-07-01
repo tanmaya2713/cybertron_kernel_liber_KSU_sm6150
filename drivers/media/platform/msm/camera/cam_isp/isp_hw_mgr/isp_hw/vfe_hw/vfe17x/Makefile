@@ -14,3 +14,5 @@ ccflags-y += -Idrivers/media/platform/msm/camera/cam_isp/isp_hw_mgr/isp_hw/vfe_h
 obj-$(CONFIG_SPECTRA_CAMERA) += cam_vfe17x.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

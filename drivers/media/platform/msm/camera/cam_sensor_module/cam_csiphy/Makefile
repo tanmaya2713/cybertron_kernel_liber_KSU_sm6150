@@ -10,3 +10,5 @@ ccflags-y += -Idrivers/media/platform/msm/camera/cam_core
 obj-$(CONFIG_SPECTRA_CAMERA) += cam_csiphy_soc.o cam_csiphy_dev.o cam_csiphy_core.o
 
 ccflags-y += -I$(src)
+
+ccflags-y += -I$(src)

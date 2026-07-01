@@ -58,11 +58,11 @@ $(warning Detected assembler with broken .inst; disassembly will be unreliable)
   endif
 endif
 
-#KBUILD_CFLAGS	+= -mgeneral-regs-only $(lseinstr) $(brokengasinst) $(vdso32)
+##KBUILD_CFLAGS	+= -mgeneral-regs-only $(lseinstr) $(brokengasinst) $(vdso32)
 KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
 KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
 KBUILD_CFLAGS	+= -fno-pic
-#KBUILD_AFLAGS	+= $(lseinstr) $(brokengasinst) $(vdso32)
+##KBUILD_AFLAGS	+= $(lseinstr) $(brokengasinst) $(vdso32)
 
 KBUILD_CFLAGS	+= $(call cc-option,-mabi=lp64)
 KBUILD_AFLAGS	+= $(call cc-option,-mabi=lp64)
@@ -86,7 +86,7 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
   # when invoking make and fix CONFIG_CROSS_COMPILE_COMPAT.
   ifeq ($(cc-name),clang)
     export CONFIG_VDSO32 := y
-#    vdso32 := -DCONFIG_VDSO32=1
+##    vdso32 := -DCONFIG_VDSO32=1
   else ifeq ($(CROSS_COMPILE_COMPAT),)
     $(error CROSS_COMPILE_COMPAT not defined or empty, the compat vDSO will not be built)
   else ifeq ($(shell which $(CROSS_COMPILE_COMPAT)$(cc-name) 2> /dev/null),)
@@ -94,7 +94,7 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
   else
     export CROSS_COMPILE_COMPAT
     export CONFIG_VDSO32 := y
-#    vdso32 := -DCONFIG_VDSO32=1
+##    vdso32 := -DCONFIG_VDSO32=1
   endif
 endif
 
@@ -255,8 +255,8 @@ ifeq ($(KBUILD_EXTMOD),)
 prepare: vdso_prepare
 vdso_prepare: prepare0
 	$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso include/generated/vdso-offsets.h
-#	$(if $(CONFIG_VDSO32),$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso32 \
-#					  include/generated/vdso32-offsets.h)
+##	$(if $(CONFIG_VDSO32),$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso32 \
+##					  include/generated/vdso32-offsets.h)
 endif
 
 define archhelp
