@@ -3,22 +3,22 @@
 # ========================================================
 # TERMINAL VISUAL ARCHITECTURE ENGINE (COLORS)
 # ========================================================
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-RESET='\033[0m'
+CYAN='\x1b[0;36m'
+GREEN='\x1b[0;32m'
+YELLOW='\x1b[1;33m'
+RED='\x1b[0;31m'
+BLUE='\x1b[0;34m'
+PURPLE='\x1b[0;35m'
+RESET='\x1b[0m'
 
 # ========================================================
 # 🚀 DRONA LABS VISUAL SIGNATURE INITIALIZATION
 # ========================================================
 clear
 echo -e "${PURPLE}=======================================================================${RESET}"
-echo -e "${PURPLE}   🧬  D R O N A   L A B S  ▪  S Y S T E M   A R C H I T E C T U R E    ${RESET}"
+echo -e "${PURPLE}   🧬   D R O N A   L A B S  ▪  S Y S T E M   A R C H I T E C T U R E    ${RESET}"
 echo -e "${PURPLE}=======================================================================${RESET}"
-echo -e "${CYAN}      🛸 CORE TELEMETRY KERNEL COMPILED ENVIRONMENT SYSTEM CORE        ${RESET}"
+echo -e "${CYAN}       🛸 CORE TELEMETRY KERNEL COMPILED ENVIRONMENT SYSTEM CORE        ${RESET}"
 echo -e "${PURPLE}=======================================================================${RESET}"
 
 # ========================================================
@@ -30,29 +30,88 @@ echo -e "  ${GREEN}[2]${RESET} Motorola Hanoip (Snapdragon 732G)"
 echo -e "-----------------------------------------------------------------------"
 read -p "🤔 Enter deployment target selection index (1 or 2): " device_selection
 
+# DUAL-MAPPING ENGINE LOGIC BLOCK
 if [ "$device_selection" = "2" ]; then
-    DEFCONFIG_PATH="arch/arm64/configs/vendor/hanoip_defconfig"
+    DEFCONFIG_PATH="arch/arm64/configs/vendor/ext_config/moto-sdmmagpie-hanoip.config"
+    MAKE_DEFCONFIG_TARGETS="vendor/sdmsteppe-perf_defconfig vendor/ext_config/moto-sdmmagpie-hanoip.config"
 else
     DEFCONFIG_PATH="arch/arm64/configs/vendor/liber_defconfig"
+    MAKE_DEFCONFIG_TARGETS="vendor/liber_defconfig"
 fi
-DEFCONFIG_BASE=$(basename "$DEFCONFIG_PATH")
 
 # ========================================================
-# ⏱️ LIVE NETWORK TIMEZONE SYNCHRONIZATION ENGINE
+# LOG DATASETS INITIALIZATION
 # ========================================================
-echo -e "\n${CYAN}[TIME] Synchronizing local engine clock matrices...${RESET}"
-# Silent API look-up with a hard 2-second connection constraint threshold
-DETECTED_TZ=$(curl -s --max-time 2 https://ipapi.co/timezone 2>/dev/null)
+LOG_FILE="compile.log"
+TMP_LOG="stage.tmp"
+rm -f "$LOG_FILE" "$TMP_LOG"
 
-# Hardened validation: Ensure it is not empty, not JSON, and contains no error flags
-if [ ! -z "$DETECTED_TZ" ] && ! echo "$DETECTED_TZ" | grep -q -E -i "error|ratelimit|\{"; then
-    export TZ="$DETECTED_TZ"
-    echo -e "${GREEN}✅ Time Sync: Clock successfully locked onto zone: $DETECTED_TZ${RESET}"
+GLOBAL_START=$(date +%s)
+declare -A STAGE_TIMES
+
+{
+    echo "========================================================================"
+    echo " 🚀 DRONA LABS TELEMETRY RUNTIME REPORT ENVIRONMENT INITIALIZATION"
+    echo "========================================================================"
+    echo "Timestamp Base : $(date)"
+    echo "Compiler Core  : $(${CC:-clang} --version | head -n 1)"
+    echo "------------------------------------------------------------------------"
+} > "$LOG_FILE"
+
+# ========================================================
+# 📦 STAGE 0: LIVE 1-100% DEPENDENCY BUILDROOM DEPLOYER
+# ========================================================
+echo -e "\n${BLUE}[STAGE 0] Auditing Host Development Dependencies...${RESET}"
+S0_START=$(date +%s)
+
+# 🟢 REMOVED DEAD LIBNCURSES5 TO PREVENT APT ABORT GLITCHES
+DEPS_ARRAY=(build-essential bc bison flex libssl-dev libelf-dev git make clang lld llvm curl python3 libncurses-dev lzop lz4 zstd device-tree-compiler ccache cpio zip unzip gawk texinfo u-boot-tools gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi)
+
+MISSING_DEPS=()
+for pkg in "${DEPS_ARRAY[@]}"; do
+    if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed"; then
+        MISSING_DEPS+=("$pkg")
+    fi
+done
+
+if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
+    # 🎯 ONLY PRINTS AND EXECUTES IF STUFF IS ENTIRELY MISSING
+    {
+        echo "========================================================================"
+        echo " 📂 [STAGE 0] PRE-FLIGHT PACKAGE ENVIRONMENT PROVISIONING"
+        echo "========================================================================"
+        echo "Target Missing Array: [ ${MISSING_DEPS[*]} ]"
+        echo "------------------------------------------------------------------------"
+    } >> "$LOG_FILE"
+
+    echo -e "${YELLOW}📥 Missing development layers found: [ ${MISSING_DEPS[*]} ]${RESET}"
+    echo -e "${CYAN}⚙️  Synchronizing apt matrix nodes and pulling packages...${RESET}"
+    
+    sudo apt-get update -qq >> "$LOG_FILE" 2>&1
+    
+    sudo apt-get install -y "${MISSING_DEPS[@]}" 2>>"$LOG_FILE" | while read -r line; do
+        echo "$line" >> "$LOG_FILE"
+        if [[ "$line" =~ \(([0-9]+)%\) ]]; then
+            PERCENT="${BASH_REMATCH[1]}"
+            printf "\r${BLUE}📥 Deploying Buildroom Matrix: [${GREEN}%-50s${BLUE}] ${PURPLE}%d%%${RESET}" "$(printf '#%.0s' $(seq 1 $((PERCENT / 2))))" "$PERCENT"
+        fi
+    done
+    printf "\n"
+    echo -e "${GREEN}✅ All toolchain components written to environment baseline successfully.${RESET}"
 else
-    # Safe offline local system fallback tracking
-    export TZ=$(cat /etc/timezone 2>/dev/null || echo "UTC")
-    echo -e "${YELLOW}⚠️  Time Sync: API rate-limited or cloud offline. Dropping back to workspace default clock.${RESET}"
+    # 🚀 SMART STRAIGHT BYPASS: Direct print if 100% clean scanning occurs
+    echo -e "${GREEN}✅ All toolchain components written to environment baseline successfully.${RESET}"
+    {
+        echo "========================================================================"
+        echo " 📂 [STAGE 0] PRE-FLIGHT PACKAGE ENVIRONMENT PROVISIONING"
+        echo "========================================================================"
+        echo "Status: 100% Core Verification. Buildroom environmental layers are fully intact."
+    } >> "$LOG_FILE"
 fi
+echo "========================================================================" >> "$LOG_FILE"
+echo -e "\n\n" >> "$LOG_FILE"
+
+S0_END=$(date +%s); STAGE_TIMES[0]=$((S0_END - S0_START))
 
 # Automated Hardware Detection Engine
 echo -e "\n${CYAN}[PROBE] Initializing Smart Hardware Infrastructure Diagnostics...${RESET}"
@@ -61,15 +120,15 @@ DETECTED_DEVICE="Generic Target Architecture"
 SOFTWARE_BASELINE="Unknown Software Baseline Platform"
 
 if [ -f "$DEFCONFIG_PATH" ]; then
-    if grep -q "CONFIG_ARCH_SDMMAGPIE=y" "$DEFCONFIG_PATH" || grep -q "CONFIG_ARCH_SM6150=y" "$DEFCONFIG_PATH"; then
-        SOFTWARE_BASELINE="Qualcomm Snapdragon 675 Architecture Core (SM6150 / sdmmagpie)"
+    if grep -q "CONFIG_ARCH_SDMMAGPIE=y" "$DEFCONFIG_PATH" || grep -q "CONFIG_ARCH_SM6150=y" "$DEFCONFIG_PATH" || grep -q "CONFIG_HANOIP_DTB=y" "$DEFCONFIG_PATH"; then
+        SOFTWARE_BASELINE="Qualcomm Snapdragon 675/730/732G Architecture Core (SM6150 / sdmmagpie)"
     fi
 
     if [[ "$DEFCONFIG_PATH" =~ "liber" ]]; then
-        DETECTED_DEVICE="Motorola Liber"
+        DETECTED_DEVICE="Motorola Liber (One Fusion+)"
         DETECTED_CPU="Qualcomm Snapdragon 730G (SM7150-AB) / Snapdragon 730 (SM7150-AA)"
     elif [[ "$DEFCONFIG_PATH" =~ "hanoip" ]]; then
-        DETECTED_DEVICE="Motorola Hanoip"
+        DETECTED_DEVICE="Motorola Hanoip (G40 Fusion / G60)"
         DETECTED_CPU="Qualcomm Snapdragon 732G (SM7150-AC)"
     fi
 fi
@@ -78,6 +137,14 @@ echo -e "${PURPLE}  ▪ [DEVICE ENVELOPE] : ${RESET}${GREEN}$DETECTED_DEVICE${RE
 echo -e "${PURPLE}  ▪ [SOC BLUEPRINT]   : ${RESET}${GREEN}$DETECTED_CPU${RESET}"
 echo -e "${PURPLE}  ▪ [SOFTWARE BASE]   : ${RESET}${GREEN}$SOFTWARE_BASELINE${RESET}"
 echo -e "${PURPLE}  ▪ [HOST STRUCTURE]  : ${RESET}${GREEN}64-Bit ARM Core Execution Environment (arm64)${RESET}"
+
+{
+    echo "🎯 TARGET HARDWARE PROFILE MATRIX:"
+    echo "  - Device Group    : $DETECTED_DEVICE"
+    echo "  - CPU Hardware    : $DETECTED_CPU"
+    echo "  - Kernel Baseline : $SOFTWARE_BASELINE"
+    echo "------------------------------------------------------------------------"
+} >> "$LOG_FILE"
 
 # ========================================================
 # 🛡️ SMART PRE-FLIGHT FINAL PAYLOAD SAFEGUARD CHECK
@@ -104,21 +171,11 @@ export CROSS_COMPILE=aarch64-linux-gnu-
 export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 ulimit -s unlimited
 
-LOG_FILE="compile.log"
-TMP_LOG="stage.tmp"
-rm -f "$LOG_FILE" "$TMP_LOG"
-
-# Initialize Telemetry Storage Matrices
 REGISTRY_MODIFIED_FILES=""
 register_modification() {
     REGISTRY_MODIFIED_FILES+="${CYAN}  - $1${RESET}\n"
 }
 
-# Advanced Fine-Grained Timing Variables
-GLOBAL_START=$(date +%s)
-declare -A STAGE_TIMES
-
-# Master Telemetry Structuring Function
 finalize_stage_log() {
     local stage_num="$1"
     local stage_title="$2"
@@ -147,23 +204,6 @@ finalize_stage_log() {
     } >> "$LOG_FILE"
     rm -f "$TMP_LOG"
 }
-
-{
-    echo "========================================================================"
-    echo " 🚀 DRONA LABS TELEMETRY RUNTIME REPORT ENVIRONMENT INITIALIZATION"
-    echo "========================================================================"
-    echo "Timestamp Base : $(date)"
-    echo "Compiler Core  : $(${CC} --version | head -n 1)"
-    echo "------------------------------------------------------------------------"
-} > "$LOG_FILE"
-
-{
-    echo "🎯 TARGET HARDWARE PROFILE MATRIX:"
-    echo "  - Device Group    : $DETECTED_DEVICE"
-    echo "  - CPU Hardware    : $DETECTED_CPU"
-    echo "  - Kernel Baseline : $SOFTWARE_BASELINE"
-    echo "------------------------------------------------------------------------"
-} >> "$LOG_FILE"
 
 # ========================================================
 # DIAGNOSTIC ENGINE - STEP 1: SUBSYSTEM EVALUATION
@@ -242,9 +282,9 @@ HOOKS_PERFECT=true
     for hook in "CONFIG_KPROBES=y" "CONFIG_HAVE_KPROBES=y" "CONFIG_KPROBE_EVENTS=y" "CONFIG_KSU=y" "CONFIG_KSU_KPROBES_HOOK=y"; do
         LINE_COUNT=$(grep -c "^$hook" "$DEFCONFIG_PATH" 2>/dev/null)
         echo "  - Evaluating Symbol: '$hook' -> Instances Discovered: $LINE_COUNT"
-        if [ "$LINE_COUNT" -ne 1 ]; then
+        if [ "$LINE_COUNT" -ne 1 ] || grep -q "CONFIG_KSU_MANUAL_HOOK=y" "$DEFCONFIG_PATH" 2>/dev/null; then
             HOOKS_PERFECT=false
-            echo "    [ALERT] Signature discrepancy caught on '$hook'."
+            echo "    [ALERT] Signature discrepancy or manual hook bypass caught on target options."
         fi
     done
 } > "$TMP_LOG" 2>&1
@@ -252,15 +292,15 @@ HOOKS_PERFECT=true
 if [ "$HOOKS_PERFECT" = false ]; then
     echo -e "${YELLOW}⚠️  Configuration imbalance or duplication detected. Re-purifying defconfig blueprint...${RESET}"
     {
-        echo -e "\n[REPAIR INITIALIZED] Purging all old scattered configurations..."
+        echo -e "\n[REPAIR INITIALIZED] Purging all old scattered or manual configurations..."
         sed -i '/CONFIG_KSU/d' "$DEFCONFIG_PATH" && echo " -> Dropped legacy CONFIG_KSU parameters"
         sed -i '/CONFIG_KPROBES/d' "$DEFCONFIG_PATH" && echo " -> Dropped legacy CONFIG_KPROBES parameters"
         sed -i '/CONFIG_HAVE_KPROBES/d' "$DEFCONFIG_PATH" && echo " -> Dropped legacy CONFIG_HAVE_KPROBES parameters"
         sed -i '/CONFIG_KPROBE_EVENTS/d' "$DEFCONFIG_PATH" && echo " -> Dropped legacy CONFIG_KPROBE_EVENTS parameters"
         
-        echo "[REPAIR WORKING] Hard-injecting structured clean baseline configuration matrix..."
+        echo "[REPAIR WORKING] Hard-injecting automated KPROBES telemetry tracking matrix..."
         echo -e "\nCONFIG_KPROBES=y\nCONFIG_HAVE_KPROBES=y\nCONFIG_KPROBE_EVENTS=y\nCONFIG_KSU=y\nCONFIG_KSU_KPROBES_HOOK=y" >> "$DEFCONFIG_PATH"
-        echo "[SUCCESS] Normalized blueprint saved back into vendor path."
+        echo "[SUCCESS] Normalized blueprint saved back into target blueprint path."
     } >> "$TMP_LOG" 2>&1
     register_modification "$DEFCONFIG_PATH (Restructured & Purified Hooks)"
     echo -e "${GREEN}✅ Defconfig Realignment: Security hooks injected without duplications.${RESET}"
@@ -277,7 +317,22 @@ finalize_stage_log "3" "DEFCONFIG RE-ARCHITECTING AND IMPLEMENTATION AUDIT" "${S
 echo -e "\n${BLUE}[STAGE 4] Building Active Environment Matrix (.config)...${RESET}"
 S4_START=$(date +%s)
 
-make ARCH=arm64 CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- vendor/"$DEFCONFIG_BASE" > "$TMP_LOG" 2>&1
+# 🛑 🎯 INTERACTIVE PROMPT SUPPRESSOR ENFORCED VIA STDIN PIPELINE PIPE
+# This forcefully auto-selects factory defaults for any trailing unconfigured architecture symbols
+yes "" | make ARCH=arm64 CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- $MAKE_DEFCONFIG_TARGETS > "$TMP_LOG" 2>&1
+
+# Enforced sanitization loop
+{
+    echo "[OVERRIDE MATRIX] Purging active workspace manual-hook dependencies..."
+    sed -i '/CONFIG_KSU_MANUAL_HOOK/d' .config
+    sed -i '/CONFIG_KSU/d' .config
+    sed -i '/CONFIG_KPROBES/d' .config
+    sed -i '/CONFIG_HAVE_KPROBES/d' .config
+    sed -i '/CONFIG_KPROBE_EVENTS/d' .config
+    
+    echo "[OVERRIDE MATRIX] Injecting explicit automated Kprobes compiler parameters..."
+    echo -e "\nCONFIG_KPROBES=y\nCONFIG_HAVE_KPROBES=y\nCONFIG_KPROBE_EVENTS=y\nCONFIG_KSU=y\nCONFIG_KSU_KPROBES_HOOK=y" >> .config
+} >> "$TMP_LOG" 2>&1
 
 if grep -q "CONFIG_CC_STACKPROTECTOR_STRONG=y" .config 2>/dev/null; then
     {
@@ -287,11 +342,15 @@ if grep -q "CONFIG_CC_STACKPROTECTOR_STRONG=y" .config 2>/dev/null; then
         sed -i '/CONFIG_VDSO32/d' .config
         sed -i '/CONFIG_COMPAT_VDSO/d' .config
         echo "# CONFIG_VDSO32 is not set" >> .config
-        echo "[RE-INDEXING] Executing configuration script optimization pass..."
-        make ARCH=arm64 CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- olddefconfig
     } >> "$TMP_LOG" 2>&1
     register_modification ".config (Stripped Security Stack Protectors)"
 fi
+
+{
+    echo "[RE-INDEXING] Regenerating active .config with explicit locked down configurations..."
+    make ARCH=arm64 CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- olddefconfig
+} >> "$TMP_LOG" 2>&1
+
 echo -e "${GREEN}✅ System Matrix: Compilation environment setup complete.${RESET}"
 S4_END=$(date +%s); STAGE_TIMES[4]=$((S4_END - S4_START))
 finalize_stage_log "4" "ACTIVE ENVIRONMENT SYSTEM (.CONFIG) GENERATION" "${STAGE_TIMES[4]}"
@@ -415,7 +474,7 @@ else
     echo -e "${GREEN} Hardware Build Duration: $((STAGE_TIMES[6] / 60))m $((STAGE_TIMES[6] % 60))s${RESET}"
     
     while read -r dtb_path; do
-        register_modification "$(echo "$dtb_path" | sed 's|arch/arm64/boot/||') (Generated Binary Matrix)"
+        register_modification "$(echo "$dtb_path" | sed 's|arch/arm64/boot||') (Generated Binary Matrix)"
     done <<< "$DTB_FILES"
     
     finalize_stage_log "6" "DEVICE TREE BLOB (DTB) HARDWARE COMPILATION" "${STAGE_TIMES[6]}"
@@ -435,7 +494,7 @@ else
             # ========================================================
             # 🎯 TELEMETRY MATHEMATICAL CALCULATOR ENGINE
             # ========================================================
-            TOTAL_PROCESSING_TIME=$(( STAGE_TIMES[1] + STAGE_TIMES[2] + STAGE_TIMES[3] + STAGE_TIMES[4] + STAGE_TIMES[5] + STAGE_TIMES[6] ))
+            TOTAL_PROCESSING_TIME=$(( STAGE_TIMES[0] + STAGE_TIMES[1] + STAGE_TIMES[2] + STAGE_TIMES[3] + STAGE_TIMES[4] + STAGE_TIMES[5] + STAGE_TIMES[6] ))
             TOTAL_IDLE_TIME=$(( TOTAL_SCRIPT_TIME - TOTAL_PROCESSING_TIME ))
             if [ "$TOTAL_IDLE_TIME" -lt 0 ]; then TOTAL_IDLE_TIME=0; fi
             
@@ -445,10 +504,11 @@ else
                 echo " 🏁 MASTER PERFORMANCE METRICS RUNTIME SUMMARY REPORT"
                 echo "========================================================================"
                 echo "  📊 TELEMETRY ENGINE REAL-TIME TIMING SPLITS:"
+                echo "  - Stage 0 [Package Auto-Provision] : ${STAGE_TIMES[0]}s"
                 echo "  - Stage 1 [KernelSU Framework Audit] : ${STAGE_TIMES[1]}s"
                 echo "  - Stage 2 [Code Integrity Check]    : ${STAGE_TIMES[2]}s"
                 echo "  - Stage 3 [Defconfig Purifier Loop] : ${STAGE_TIMES[3]}s"
-                echo "  - Stage 4 [.config Matrix Compiler] : ${STAGE_TIMES[4]}s"
+                echo "  - - Stage 4 [.config Matrix Compiler] : ${STAGE_TIMES[4]}s"
                 echo "  - Stage 5 [Core Image Build Engine] : ${STAGE_TIMES[5]}s"
                 echo "  - Stage 6 [Hardware Device Tree Map] : ${STAGE_TIMES[6]}s"
                 echo "------------------------------------------------------------------------"
@@ -471,12 +531,13 @@ else
             } >> "$LOG_FILE"
             
             echo -e "\n${PURPLE}=======================================================================${RESET}"
-            echo -e "${PURPLE}   🏆  F L A W L E S L Y   C O O K E D  ▪  D R O N A   L A B S         ${RESET}"
+            echo -e "${PURPLE}   🏆   F L A W L E S L Y   C O O K E D   ▪   D R O N A   L A B S         ${RESET}"
             echo -e "${PURPLE}=======================================================================${RESET}"
             echo -e "${GREEN} 📂 Output Link Vector: arch/arm64/boot/Image.gz-dtb${RESET}"
             echo -e "${PURPLE} --------------------------------------------------------------------- ${RESET}"
-            echo -e "${PURPLE}                ENGINE AREA PERFORMANCE TELEMETRY REPORT               ${RESET}"
+            echo -e "${PURPLE}                    ENGINE AREA PERFORMANCE TELEMETRY REPORT            ${RESET}"
             echo -e "${PURPLE} --------------------------------------------------------------------- ${RESET}"
+            echo -e "${CYAN}  ▪ Stage 0 [Toolchain Package Deployment] : ${RESET}${GREEN}${STAGE_TIMES[0]}s${RESET}"
             echo -e "${CYAN}  ▪ Stage 1 [Security Subsystem Audit]     : ${RESET}${GREEN}${STAGE_TIMES[1]}s${RESET}"
             echo -e "${CYAN}  ▪ Stage 2 [Code Integrity Verification]  : ${RESET}${GREEN}${STAGE_TIMES[2]}s${RESET}"
             echo -e "${CYAN}  ▪ Stage 3 [Blueprint Defconfig Parser]   : ${RESET}${GREEN}${STAGE_TIMES[3]}s${RESET}"
@@ -486,7 +547,7 @@ else
             echo -e "${PURPLE} --------------------------------------------------------------------- ${RESET}"
             echo -e "${GREEN}  ⚙️  Pure Computer Processing Duration   : ${RESET}${CYAN}$((TOTAL_PROCESSING_TIME / 60))m $((TOTAL_PROCESSING_TIME % 60))s${RESET}"
             echo -e "${GREEN}  👤 User Interaction & Menu Idle Time    : ${RESET}${CYAN}$((TOTAL_IDLE_TIME / 60))m $((TOTAL_IDLE_TIME % 60))s${RESET}"
-            echo -e "${GREEN}  🛸 Absolute Cumulative Script Cycle     : ${RESET}${PURPLE}$((TOTAL_SCRIPT_TIME / 60))m $((TOTAL_SCRIPT_TIME % 60))s${RESET}"
+            echo -e "${GREEN}  🛸 Absolute Cumulative Script Cycle      : ${RESET}${PURPLE}$((TOTAL_SCRIPT_TIME / 60))m $((TOTAL_SCRIPT_TIME % 60))s${RESET}"
             echo -e "${PURPLE} --------------------------------------------------------------------- ${RESET}"
             echo -e "📝 MODIFIED METRICS IN THIS RUN ROUTINE:"
             if [ -z "$REGISTRY_MODIFIED_FILES" ]; then
