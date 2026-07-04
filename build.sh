@@ -16,7 +16,7 @@ RESET='\x1b[0m'
 # ========================================================
 clear
 echo -e "${PURPLE}=======================================================================${RESET}"
-echo -e "${PURPLE}   🧬   D R O N A   L A B S  ▪  S Y S T E M   A R C H I T E C T U R E    ${RESET}"
+echo -e "${PURPLE}   🧬   D R O N A   L A B S   ▪   S Y S T E M   A R C H I T E C T U R E    ${RESET}"
 echo -e "${PURPLE}=======================================================================${RESET}"
 echo -e "${CYAN}       🛸 CORE TELEMETRY KERNEL COMPILED ENVIRONMENT SYSTEM CORE        ${RESET}"
 echo -e "${PURPLE}=======================================================================${RESET}"
@@ -231,28 +231,37 @@ S2_START=$(date +%s)
 NEEDS_CODE_FIX=false
 if grep -q "SDCARDFS_VERSION" fs/sdcardfs/main.c 2>/dev/null && ! grep -q '"v0.1"' fs/sdcardfs/main.c 2>/dev/null; then NEEDS_CODE_FIX=true; fi
 if grep -q "vdso32" arch/arm64/Makefile 2>/dev/null && ! grep -q "#.*vdso32" arch/arm64/Makefile 2>/dev/null; then NEEDS_CODE_FIX=true; fi
+# 🟢 SAFETY LAYER FIX: If the global duplicate function declaration exists, force code repair initialization block
+if grep -q "^void cam_dump_tbl_info" drivers/media/platform/msm/camera/cam_req_mgr/cam_req_mgr_util.c 2>/dev/null; then NEEDS_CODE_FIX=true; fi
 
 if [ "$NEEDS_CODE_FIX" = true ]; then
     echo -e "${YELLOW}⚠️  Source code misalignment caught. Executing automatic patching loop...${RESET}"
     {
         echo "[ACTION] Triggering Git checkout safety reversions..."
-        git checkout fs/sdcardfs/main.c arch/arm64/Makefile drivers/hid/Makefile "$DEFCONFIG_PATH" drivers/net/usb/usbnet.c drivers/power/supply/qcom/smb5-lib.h -v
-        git checkout drivers/media/platform/msm/camera/ -v
+        git checkout fs/sdcardfs/main.c arch/arm64/Makefile drivers/hid/Makefile "$DEFCONFIG_PATH" drivers/net/usb/usbnet.c drivers/power/supply/qcom/smb5-lib.h 
+        git checkout drivers/media/platform/msm/camera/ 
         
         echo "[ACTION] Stream-injecting driver level repair patches..."
         sed -i 's/SDCARDFS_VERSION/"v0.1"/g' fs/sdcardfs/main.c && echo " -> Successfully applied patch 1 (sdcardfs macro)"
         sed -i '/vdso32/s/^/#/' arch/arm64/Makefile && echo " -> Successfully applied patch 2 (vdso32 bypass)"
-        echo "ccflags-y += -I\$(src)" >> drivers/hid/Makefile && echo " -> Successfully applied patch 3 (hid header inclusion)"
+        
+        # FORCED NEWLINE AVOIDANCE BLOCK
+        echo -e "\nccflags-y += -I\$(src)" >> drivers/hid/Makefile && echo " -> Successfully applied patch 3 (hid header inclusion)"
 
+        # PREVENTS THE CAMERA COMPILATION SYNTAX SMASH CRASH
         find drivers/media/platform/msm/camera/ -name "Makefile" | while read -r camera_makefile; do
+            echo "" >> "$camera_makefile"
             echo "ccflags-y += -I\$(src)" >> "$camera_makefile"
             echo " -> Patched recursive tracking map: $camera_makefile"
         done
 
-        sed -i '157s/cam_dump_tbl_info/cam_dump_tbl_info_duplicate/' drivers/media/platform/msm/camera/cam_req_mgr/cam_req_mgr_util.c && echo " -> Successfully applied patch 5 (camera dump isolation)"
+        # 🟢 CRITICAL SYSTEM FIX: Anchors patch exclusively to the line start position, shielding line 103 static profiles
+        sed -i 's/^void cam_dump_tbl_info/void cam_dump_tbl_info_duplicate/g' drivers/media/platform/msm/camera/cam_req_mgr/cam_req_mgr_util.c && echo " -> Successfully applied patch 5 (camera dump isolation)"
         sed -i '/del_timer_sync.*dev->delay/s/^/\/\//' drivers/net/usb/usbnet.c && echo " -> Successfully applied patch 6a (usbnet timer sync)"
         sed -i '/tasklet_kill.*dev->bh/s/^/\/\//' drivers/net/usb/usbnet.c && echo " -> Successfully applied patch 6b (usbnet tasklet kill)"
-        echo "#define smblib_handle_usb_current(...) (0)" >> drivers/power/supply/qcom/smb5-lib.h && echo " -> Successfully applied patch 7 (battery reference bypass)"
+        
+        # FORCED NEWLINE SAFETY LAYER
+        echo -e "\n#define smblib_handle_usb_current(...) (0)" >> drivers/power/supply/qcom/smb5-lib.h && echo " -> Successfully applied patch 7 (battery reference bypass)"
     } > "$TMP_LOG" 2>&1
     
     register_modification "fs/sdcardfs/main.c (Patched SDCARDFS Macro)"
@@ -378,7 +387,7 @@ if [ ! -z "$KERNEL_IMG" ]; then
         echo -e "${YELLOW}⏭️  Bypassing core compilation. Linking engine directly to hardware sectors...${RESET}"
         
         if [ "$KERNEL_IMG" = "arch/arm64/boot/Image" ]; then
-            echo -e "\n${YELLOW}⚠️  Discovered pre-existing raw Image without footprint compression optimization!${RESET}"
+            echo -e "\n${YELLOW}⚠️  Discovered pre-existing raw Image without footprint footprint optimization!${RESET}"
             read -p "🤔 Would you like to compress it to Image.gz now for enhanced runtime deployment stability? (y/n): " compress_now
             if [[ "$compress_now" =~ ^[Yy]$ ]]; then
                 echo -e "${BLUE}📥 Running high-ratio GZip compilation engine...${RESET}"
